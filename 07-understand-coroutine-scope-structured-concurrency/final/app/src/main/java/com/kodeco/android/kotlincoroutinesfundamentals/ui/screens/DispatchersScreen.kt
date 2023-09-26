@@ -44,6 +44,7 @@ import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
+import kotlinx.coroutines.withContext
 import kotlin.time.Duration.Companion.milliseconds
 
 @Composable
@@ -78,4 +79,15 @@ private fun startCoroutines(dispatcher: CoroutineDispatcher) {
 
 private fun startCoroutinesWithContext() {
   // Your code
+  CoroutineScope(Dispatchers.IO).launch {
+    repeat(100) { index ->
+      Log.d("Launching coroutine #$index", Thread.currentThread().name)
+      launch {
+        delay(10.milliseconds)
+        withContext(Dispatchers.Main) {
+          Log.d("Running coroutine #$index", Thread.currentThread().name)
+        }
+      }
+    }
+  }
 }
