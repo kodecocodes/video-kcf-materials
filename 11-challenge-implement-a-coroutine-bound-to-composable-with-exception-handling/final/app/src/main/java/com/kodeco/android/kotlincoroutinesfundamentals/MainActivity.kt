@@ -1,0 +1,105 @@
+/*
+ * Copyright (c) 2023 Kodeco Inc.
+ * 
+ * Permission is hereby granted, free of charge, to any person obtaining a copy
+ * of this software and associated documentation files (the "Software"), to deal
+ * in the Software without restriction, including without limitation the rights
+ * to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
+ * copies of the Software, and to permit persons to whom the Software is
+ * furnished to do so, subject to the following conditions:
+ * 
+ * The above copyright notice and this permission notice shall be included in
+ * all copies or substantial portions of the Software.
+ * 
+ * Notwithstanding the foregoing, you may not use, copy, modify, merge, publish,
+ * distribute, sublicense, create a derivative work, and/or sell copies of the
+ * Software in any work that is designed, intended, or marketed for pedagogical or
+ * instructional purposes related to programming, coding, application development,
+ * or information technology.  Permission for such use, copying, modification,
+ * merger, publication, distribution, sublicensing, creation of derivative works,
+ * or sale is expressly withheld.
+ * 
+ * This project and source code may use libraries or frameworks that are
+ * released under various Open-Source licenses. Use of those libraries and
+ * frameworks are governed by their own individual licenses.
+ * 
+ * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+ * IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+ * FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
+ * AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+ * LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
+ * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
+ * THE SOFTWARE.
+ */
+
+package com.kodeco.android.kotlincoroutinesfundamentals
+
+import android.os.Bundle
+import androidx.activity.ComponentActivity
+import androidx.activity.compose.setContent
+import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.foundation.layout.padding
+import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.Surface
+import androidx.compose.ui.Modifier
+import androidx.compose.ui.unit.dp
+import androidx.navigation.compose.NavHost
+import androidx.navigation.compose.composable
+import androidx.navigation.compose.rememberNavController
+import com.kodeco.android.kotlincoroutinesfundamentals.ui.screens.ErrorHandlingScreen
+import com.kodeco.android.kotlincoroutinesfundamentals.ui.screens.AwaitScreen
+import com.kodeco.android.kotlincoroutinesfundamentals.ui.screens.BuildersScreen
+import com.kodeco.android.kotlincoroutinesfundamentals.ui.screens.ChallengeScreen
+import com.kodeco.android.kotlincoroutinesfundamentals.ui.screens.DispatchersScreen
+import com.kodeco.android.kotlincoroutinesfundamentals.ui.screens.JobsScreen
+import com.kodeco.android.kotlincoroutinesfundamentals.ui.screens.MenuScreen
+import com.kodeco.android.kotlincoroutinesfundamentals.ui.screens.ScopesScreen
+import com.kodeco.android.kotlincoroutinesfundamentals.ui.theme.KotlinCoroutinesFundamentalsTheme
+import kotlinx.coroutines.DEBUG_PROPERTY_NAME
+import kotlinx.coroutines.DEBUG_PROPERTY_VALUE_ON
+
+class MainActivity : ComponentActivity() {
+
+  companion object {
+
+  }
+
+  override fun onCreate(savedInstanceState: Bundle?) {
+    super.onCreate(savedInstanceState)
+    setContent {
+      KotlinCoroutinesFundamentalsTheme {
+        Surface(
+          modifier = Modifier
+            .fillMaxSize()
+            .padding(16.dp),
+          color = MaterialTheme.colorScheme.background,
+        ) {
+          val navController = rememberNavController()
+          NavHost(navController = navController, startDestination = "menu") {
+            composable("menu") {
+              MenuScreen(
+                items = listOf(
+                  "Dispatchers" to { navController.navigate("dispatchers") },
+                  "Builders" to { navController.navigate("builders") },
+                  "Scopes" to { navController.navigate("scopes") },
+                  "Jobs" to { navController.navigate("jobs") },
+                  "Await" to { navController.navigate("await") },
+                  "Error Handling" to { navController.navigate("error") },
+                  "Challenge" to { navController.navigate("challenge") },
+                )
+              )
+            }
+            composable("dispatchers") { DispatchersScreen() }
+            composable("builders") { BuildersScreen() }
+            composable("scopes") { ScopesScreen(onNavigateBack = navController::navigateUp) }
+            composable("jobs") { JobsScreen() }
+            composable("await") { AwaitScreen() }
+            composable("error") { ErrorHandlingScreen() }
+            composable("challenge") { ChallengeScreen() }
+          }
+        }
+      }
+    }
+  }
+}
+
