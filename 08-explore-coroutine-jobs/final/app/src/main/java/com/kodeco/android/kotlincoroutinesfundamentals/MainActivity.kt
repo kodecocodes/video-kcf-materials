@@ -34,44 +34,74 @@
 
 package com.kodeco.android.kotlincoroutinesfundamentals
 
-import android.graphics.BitmapFactory
 import android.os.Bundle
-import android.util.Log
-import android.widget.ImageView
-import androidx.appcompat.app.AppCompatActivity
-import kotlinx.coroutines.GlobalScope
-import kotlinx.coroutines.launch
-import java.net.HttpURLConnection
-import java.net.URL
+import androidx.activity.ComponentActivity
+import androidx.activity.compose.setContent
+import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.foundation.layout.padding
+import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.Surface
+import androidx.compose.ui.Modifier
+import androidx.compose.ui.unit.dp
+import androidx.navigation.compose.NavHost
+import androidx.navigation.compose.composable
+import androidx.navigation.compose.rememberNavController
+import com.kodeco.android.kotlincoroutinesfundamentals.ui.screens.ErrorHandlingScreen
+import com.kodeco.android.kotlincoroutinesfundamentals.ui.screens.AwaitScreen
+import com.kodeco.android.kotlincoroutinesfundamentals.ui.screens.BuildersScreen
+import com.kodeco.android.kotlincoroutinesfundamentals.ui.screens.ChallengeScreen
+import com.kodeco.android.kotlincoroutinesfundamentals.ui.screens.DispatchersScreen
+import com.kodeco.android.kotlincoroutinesfundamentals.ui.screens.JobsScreen
+import com.kodeco.android.kotlincoroutinesfundamentals.ui.screens.MenuScreen
+import com.kodeco.android.kotlincoroutinesfundamentals.ui.screens.ScopesScreen
+import com.kodeco.android.kotlincoroutinesfundamentals.ui.theme.KotlinCoroutinesFundamentalsTheme
+import kotlinx.coroutines.DEBUG_PROPERTY_NAME
+import kotlinx.coroutines.DEBUG_PROPERTY_VALUE_ON
 
-/**
- * Main Screen
- */
-class MainActivity : AppCompatActivity() {
+class MainActivity : ComponentActivity() {
+
+  companion object {
+    init {
+      System.setProperty(DEBUG_PROPERTY_NAME, DEBUG_PROPERTY_VALUE_ON)
+    }
+  }
 
   override fun onCreate(savedInstanceState: Bundle?) {
-    // Switch to AppTheme for displaying the activity
-    setTheme(R.style.AppTheme)
-
     super.onCreate(savedInstanceState)
-    setContentView(R.layout.activity_main)
-
-    // Your code
-    Log.d("TaskThread:", Thread.currentThread().name)
-    GlobalScope.launch {
-      Log.d("TaskThread:", Thread.currentThread().name)
-      val imageUrl = URL("https://raw.githubusercontent.com/kodecocodes/video-kcf-materials/versions/2.0/imagery-3d-k4-blue.webp")
-      val connection = imageUrl.openConnection() as HttpURLConnection
-      connection.doInput = true
-      connection.connect()
-
-      val inputStream = connection.inputStream
-      val bitmap = BitmapFactory.decodeStream(inputStream)
-
-      runOnUiThread {
-        Log.d("TaskThread:", Thread.currentThread().name)
-        findViewById<ImageView>(R.id.image).setImageBitmap(bitmap)
+    setContent {
+      KotlinCoroutinesFundamentalsTheme {
+        Surface(
+          modifier = Modifier
+            .fillMaxSize()
+            .padding(16.dp),
+          color = MaterialTheme.colorScheme.background,
+        ) {
+          val navController = rememberNavController()
+          NavHost(navController = navController, startDestination = "menu") {
+            composable("menu") {
+              MenuScreen(
+                items = listOf(
+                  "Dispatchers" to { navController.navigate("dispatchers") },
+                  "Builders" to { navController.navigate("builders") },
+                  "Scopes" to { navController.navigate("scopes") },
+                  "Jobs" to { navController.navigate("jobs") },
+                  "Await" to { navController.navigate("await") },
+                  "Error Handling" to { navController.navigate("error") },
+                  "Challenge" to { navController.navigate("challenge") },
+                )
+              )
+            }
+            composable("dispatchers") { DispatchersScreen() }
+            composable("builders") { BuildersScreen() }
+            composable("scopes") { ScopesScreen(onNavigateBack = navController::navigateUp) }
+            composable("jobs") { JobsScreen() }
+            composable("await") { AwaitScreen() }
+            composable("error") { ErrorHandlingScreen() }
+            composable("challenge") { ChallengeScreen() }
+          }
+        }
       }
     }
   }
 }
+
